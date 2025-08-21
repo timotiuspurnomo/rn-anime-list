@@ -1,4 +1,4 @@
-import homeBg from "@/assets/images/home-bg.png";
+import homeBg from "@/assets/images/global-bg.png";
 import tabHighlight from "@/assets/images/tab-highlight.png";
 
 const Images = {
