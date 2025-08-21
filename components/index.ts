@@ -1,5 +1,5 @@
 import Background from "./Background";
-import AnimeThisSeason from "./AnimeThisSeason";
+import AnimeListThisSeason from "./AnimeListThisSeason";
 import AnimeCard from "./cards/AnimeCard";
 
-export { Background, AnimeThisSeason, AnimeCard };
+export { Background, AnimeListThisSeason, AnimeCard };

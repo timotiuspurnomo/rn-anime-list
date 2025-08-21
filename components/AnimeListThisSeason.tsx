@@ -5,13 +5,14 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  ScrollViewProps,
 } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Fonts } from "@/constants";
 import { AnimeCard } from "@/components";
 import { getSeasonNowInfQuery } from "@/queries";
 
-export default function AnimeThisSeason() {
+export default function AnimeListThisSeason(props: ScrollViewProps) {
   const {
     data,
     hasNextPage,
@@ -63,6 +64,7 @@ export default function AnimeThisSeason() {
         renderLoading()
       ) : (
         <FlatList
+          {...props}
           data={getSeasonNowData}
           showsVerticalScrollIndicator={false}
           numColumns={3}
