@@ -17,8 +17,8 @@ export function getSeasonNowInfQuery(params: GetSeasonNowParams) {
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
-      lastPage.pagination.has_next_page
-        ? lastPage.pagination.current_page + 1
+      lastPage?.pagination?.has_next_page
+        ? lastPage?.pagination?.current_page + 1
         : undefined,
   });
 }

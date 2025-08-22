@@ -1,20 +1,35 @@
-import { Animated, View, SafeAreaView, StyleSheet } from "react-native";
+import { useState } from "react";
+import {
+  Animated,
+  View,
+  SafeAreaView,
+  StyleSheet,
+  Platform,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Background, AnimeListThisSeason } from "@/components";
 import { Colors, Fonts, Images, Variables } from "@/constants";
 
 export default function Index() {
+  const insets = useSafeAreaInsets();
+  const [scrollY] = useState(new Animated.Value(0));
   const welcomeHeaderMaxHeight = Variables.screenWidth * 0.5;
   const welcomeHeaderMinHeight = Variables.screenWidth * 0.01;
   const scrollDistance = welcomeHeaderMaxHeight - welcomeHeaderMinHeight;
-  const scrollY = new Animated.Value(0);
   const welcomeHeaderHeight = scrollY.interpolate({
-    inputRange: [0, scrollDistance],
+    inputRange: [
+      0,
+      Platform.OS === "android" ? scrollDistance * 2 : scrollDistance,
+    ],
     outputRange: [welcomeHeaderMaxHeight, welcomeHeaderMinHeight],
     extrapolate: "clamp",
   });
   const welcomeHeaderAnimatedStyle = {
     opacity: scrollY.interpolate({
-      inputRange: [0, scrollDistance / 2, scrollDistance],
+      inputRange:
+        Platform.OS === "android"
+          ? [0, scrollDistance, scrollDistance * 2]
+          : [0, scrollDistance / 2, scrollDistance],
       outputRange: [1, 0.5, 0],
       extrapolate: "clamp",
     }),
@@ -32,7 +47,7 @@ export default function Index() {
     <View style={styles.backgroundView}>
       <Background />
       <SafeAreaView style={styles.safeAreaView}>
-        <View style={styles.mainView}>
+        <View style={[styles.mainView, { paddingTop: 80 - insets.top }]}>
           <Animated.View
             style={[styles.logoAppView, { height: welcomeHeaderHeight }]}
           >

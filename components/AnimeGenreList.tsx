@@ -61,10 +61,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 99,
     backgroundColor: Colors.tertiary,
+    borderWidth: 1,
+    borderColor: Colors.tertiary,
     marginRight: 10,
   },
   selectedAnimeGenreView: {
-    borderWidth: 1,
     borderColor: Colors.white,
   },
   animeGenreLabel: {
