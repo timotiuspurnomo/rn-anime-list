@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "100%",
     flexShrink: 1,
-    color: "#FFFFFF",
+    color: Colors.white,
     fontSize: 15,
   },
 });

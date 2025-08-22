@@ -1,14 +1,20 @@
 import { Colors, Fonts } from "@/constants";
 import { useGenreStore } from "@/store";
-import { AnimeGenresType } from "@/types";
-import { FlatList, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { AnimeGenreType } from "@/types";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 type AnimeGenreProps = {
-  data: AnimeGenresType & { index: number };
+  data: AnimeGenreType & { index: number };
 };
 
 type AnimeGenreListProps = {
-  data: AnimeGenresType[];
+  data: AnimeGenreType[];
 };
 
 function AnimeGenre({ data }: AnimeGenreProps) {
@@ -36,14 +42,15 @@ function AnimeGenre({ data }: AnimeGenreProps) {
 
 export default function AnimeGenreList({ data }: AnimeGenreListProps) {
   return (
-    <FlatList
-      data={data}
-      horizontal
-      renderItem={({ index, item }) => (
-        <AnimeGenre key={`${index}`} data={{ ...item, index }} />
-      )}
-      style={styles.customFlatList}
-    />
+    <View style={styles.flatListContainer}>
+      <FlatList
+        data={data}
+        horizontal
+        renderItem={({ index, item }) => (
+          <AnimeGenre key={`${index}`} data={{ ...item, index }} />
+        )}
+      />
+    </View>
   );
 }
 
@@ -58,7 +65,7 @@ const styles = StyleSheet.create({
   },
   selectedAnimeGenreView: {
     borderWidth: 1,
-    borderColor: "#FFFFFF",
+    borderColor: Colors.white,
   },
   animeGenreLabel: {
     fontFamily: Fonts.medium,
@@ -67,7 +74,7 @@ const styles = StyleSheet.create({
   selectedAnimeGenreLabel: {
     color: Colors.purple,
   },
-  customFlatList: {
+  flatListContainer: {
     height: 35,
   },
 });

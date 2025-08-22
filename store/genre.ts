@@ -11,12 +11,12 @@ interface GenreState {
   toogleSelectedGenresObj: (genre: string) => void;
 }
 
-export const useGenreStore = create<GenreState>()((set) => ({
+export const useGenreStore = create<GenreState>()((set, get) => ({
   ...initState,
   clearSelectedGenresObj: () => set(() => initState),
   toogleSelectedGenresObj: (genre: string) =>
-    set((state) => {
-      const newSelectedGenresObj = { ...state.selectedGenresObj };
+    set(() => {
+      const newSelectedGenresObj = { ...get().selectedGenresObj };
       if (newSelectedGenresObj[genre]) {
         delete newSelectedGenresObj[genre];
       } else {

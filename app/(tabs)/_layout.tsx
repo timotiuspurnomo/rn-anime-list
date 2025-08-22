@@ -31,7 +31,7 @@ const TabIcon = ({ focused, title, icon }: TabIconProps) => {
     <View style={styles.tabIconView}>
       <Image
         source={icon}
-        tintColor={Colors.light[200]}
+        tintColor={Colors.blueLight}
         style={styles.tabIconIcon}
       />
     </View>

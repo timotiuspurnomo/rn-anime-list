@@ -8,7 +8,7 @@ import {
   ScrollViewProps,
 } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Fonts } from "@/constants";
+import { Colors, Fonts } from "@/constants";
 import { AnimeCard } from "@/components";
 import { getSeasonNowInfQuery } from "@/queries";
 
@@ -30,7 +30,7 @@ export default function AnimeListThisSeason(props: ScrollViewProps) {
   function renderLoading() {
     return (
       <View style={styles.loadingView}>
-        <ActivityIndicator size={"large"} color={"#FFFFFF"} />
+        <ActivityIndicator size={"large"} color={Colors.white} />
       </View>
     );
   }
@@ -43,7 +43,7 @@ export default function AnimeListThisSeason(props: ScrollViewProps) {
       hasNextPage &&
       getSeasonNowData.length > 0 && (
         <View style={styles.loadingMoreView}>
-          <ActivityIndicator size={"large"} color={"#FFFFFF"} />
+          <ActivityIndicator size={"large"} color={Colors.white} />
         </View>
       )
     );
@@ -110,12 +110,12 @@ const styles = StyleSheet.create({
   subTitle: {
     fontFamily: Fonts.bold,
     fontSize: 20,
-    color: "#FFFFFF",
+    color: Colors.white,
     marginBottom: 15,
   },
   emptyText: {
     fontFamily: Fonts.bold,
-    color: "#FFFFFF",
+    color: Colors.white,
   },
   customColumnWrapper: {
     marginBottom: 30,
