@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useRef } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import moment from "moment";
 import { Colors, Fonts, Icons, Variables } from "@/constants";
@@ -22,6 +23,7 @@ import { AnimeDetailType, AnimeGenreType } from "@/types";
 
 const AnimeDetail = () => {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams();
   const { favouriteAnimeList, toogleFavorite } = useFavoriteStore();
   const { data, isLoading } = useQuery(getAnimeByIdQuery(Number(id)));
@@ -56,7 +58,7 @@ const AnimeDetail = () => {
   function startHeartAnimation(isFavorite: boolean) {
     Animated.sequence([
       Animated.timing(redHeartAnimatedVal.current, {
-        toValue: 1.4,
+        toValue: 1.5,
         duration: 200,
         useNativeDriver: false,
       }),
@@ -148,11 +150,20 @@ const AnimeDetail = () => {
     name: string,
     values: string | string[]
   ) {
-    const value = values.constructor === Array ? values.join(" • ") : values;
+    const value =
+      values?.constructor === Array ? values.join(" • ") : values || "-";
     return (
       <View key={index} style={styles.extraInfoView}>
         <Text style={styles.infoText}>{name}</Text>
         <Text style={styles.extraInfoText}>{value || "-"}</Text>
+      </View>
+    );
+  }
+
+  function renderError() {
+    return (
+      <View style={styles.emptyView}>
+        <Text style={styles.emptyText}>{"Ooops... something went wrong"}</Text>
       </View>
     );
   }
@@ -171,7 +182,7 @@ const AnimeDetail = () => {
       <View style={styles.mainView}>
         {isLoading ? (
           renderLoading()
-        ) : (
+        ) : data ? (
           <ScrollView
             contentContainerStyle={styles.customContentContainerStyle}
             style={styles.customScrollView}
@@ -204,13 +215,15 @@ const AnimeDetail = () => {
             </TouchableOpacity>
             {renderAnimeDetail(data)}
           </ScrollView>
+        ) : (
+          renderError()
         )}
       </View>
       <SafeAreaView>
         <TouchableOpacity
           activeOpacity={1}
           onPress={() => router.back()}
-          style={styles.backTouch}
+          style={[styles.backTouch, { top: 100 - insets.top * 1.5 }]}
         >
           <FontAwesome6
             name="chevron-left"
@@ -274,6 +287,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  emptyView: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   titleText: {
     fontSize: 24,
     fontFamily: Fonts.bold,
@@ -322,13 +340,18 @@ const styles = StyleSheet.create({
     color: Colors.white,
     marginBottom: 25,
   },
+  emptyText: {
+    fontSize: 16,
+    fontFamily: Fonts.bold,
+    color: Colors.white,
+    textAlign: "center",
+  },
   backTouch: {
     width: 50,
     height: 50,
     backgroundColor: `${Colors.grey}B3`,
     alignItems: "center",
     justifyContent: "center",
-    top: Variables.safeNotchHeight + 10,
     left: 15,
     borderRadius: 99,
   },
@@ -337,8 +360,9 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   heartIcon: {
-    fontSize: 30,
+    fontSize: 34,
     color: Colors.red,
+    marginTop: 3,
   },
   greyHeartIcon: {
     color: Colors.grey,

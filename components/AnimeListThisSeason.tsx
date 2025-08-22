@@ -3,19 +3,19 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   ActivityIndicator,
   ScrollViewProps,
 } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Colors, Fonts } from "@/constants";
-import { AnimeCard } from "@/components";
+import { Colors, Fonts, Variables } from "@/constants";
+import { AnimeList } from "@/components";
 import { getSeasonNowInfQuery } from "@/queries";
 
 export default function AnimeListThisSeason(props: ScrollViewProps) {
   const {
     data,
     hasNextPage,
+    isError,
     isFetching,
     isLoading,
     fetchNextPage,
@@ -49,6 +49,14 @@ export default function AnimeListThisSeason(props: ScrollViewProps) {
     );
   }
 
+  function renderError() {
+    return (
+      <View style={styles.emptyView}>
+        <Text style={styles.emptyText}>{"Can't connect to server"}</Text>
+      </View>
+    );
+  }
+
   function renderEmptyList() {
     return (
       !isLoading && (
@@ -64,21 +72,16 @@ export default function AnimeListThisSeason(props: ScrollViewProps) {
       <Text style={styles.subTitle}>{"Animes this season"}</Text>
       {isLoading ? (
         renderLoading()
+      ) : isError ? (
+        renderError()
       ) : (
-        <FlatList
-          {...props}
+        <AnimeList
           data={getSeasonNowData}
-          showsVerticalScrollIndicator={false}
-          numColumns={3}
-          columnWrapperStyle={styles.customColumnWrapper}
-          renderItem={({ index, item }) => (
-            <AnimeCard key={index} data={item} />
-          )}
+          renderItem={undefined}
           onEndReached={() => hasNextPage && !isFetching && fetchNextPage()}
-          onEndReachedThreshold={0.1}
-          contentContainerStyle={styles.customContentContainerStyle}
           ListEmptyComponent={renderEmptyList}
           ListFooterComponent={renderLoadingMore}
+          {...props}
         />
       )}
     </View>
@@ -90,7 +93,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loadingView: {
-    flex: 1,
+    height: "70%",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -103,7 +106,7 @@ const styles = StyleSheet.create({
   },
   emptyView: {
     width: "100%",
-    height: 50,
+    height: Variables.screenHeight * 0.5,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -114,14 +117,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   emptyText: {
+    fontSize: 16,
     fontFamily: Fonts.bold,
     color: Colors.white,
-  },
-  customColumnWrapper: {
-    marginBottom: 30,
-    gap: "5%",
-  },
-  customContentContainerStyle: {
-    paddingBottom: 50,
+    textAlign: "center",
   },
 });

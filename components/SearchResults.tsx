@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { AnimeCard, AnimeGenreList } from "@/components";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { AnimeGenreList, AnimeList } from "@/components";
 import { Colors, Fonts, Variables } from "@/constants";
 import { getAnimeSearchInfQuery } from "@/queries";
 import { useGenreStore } from "@/store";
@@ -27,6 +21,7 @@ export default function SearchResults({ keyword, animeGenres }: Props) {
   const {
     data,
     hasNextPage,
+    isError,
     isFetching,
     isLoading,
     fetchNextPage,
@@ -77,6 +72,14 @@ export default function SearchResults({ keyword, animeGenres }: Props) {
     );
   }
 
+  function renderError() {
+    return (
+      <View style={styles.emptyView}>
+        <Text style={styles.emptyText}>{"Can't connect to server"}</Text>
+      </View>
+    );
+  }
+
   function renderEmptyList() {
     return (
       !isLoading && (
@@ -95,21 +98,16 @@ export default function SearchResults({ keyword, animeGenres }: Props) {
       )}
       {isLoading || isDelay ? (
         renderLoading()
+      ) : isError ? (
+        renderError()
       ) : (
-        <FlatList
+        <AnimeList
           data={getResultsData}
-          showsVerticalScrollIndicator={false}
-          numColumns={3}
-          columnWrapperStyle={styles.customColumnWrapper}
-          renderItem={({ index, item }) => (
-            <AnimeCard key={index} data={item} />
-          )}
+          renderItem={undefined}
           onEndReached={() => hasNextPage && !isFetching && fetchNextPage()}
-          onEndReachedThreshold={0.1}
-          contentContainerStyle={styles.customContentContainerStyle}
-          style={styles.customFlatList}
           ListEmptyComponent={renderEmptyList}
           ListFooterComponent={renderLoadingMore}
+          style={styles.customFlatList}
         />
       )}
     </View>
@@ -121,7 +119,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loadingView: {
-    flex: 1,
+    height: Variables.screenHeight * 0.65,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -133,7 +131,7 @@ const styles = StyleSheet.create({
     paddingBottom: 70,
   },
   emptyView: {
-    flex: 1,
+    height: Variables.screenHeight * 0.6,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -144,16 +142,10 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   emptyText: {
+    fontSize: 16,
     fontFamily: Fonts.bold,
     color: Colors.white,
-  },
-  customColumnWrapper: {
-    marginBottom: 30,
-    gap: "5%",
-  },
-  customContentContainerStyle: {
-    minHeight: Variables.screenHeight * 0.7,
-    paddingBottom: 50,
+    textAlign: "center",
   },
   customFlatList: {
     marginTop: 20,
