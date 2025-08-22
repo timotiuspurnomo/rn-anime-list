@@ -255,7 +255,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 99,
-    backgroundColor: Colors.white,
+    backgroundColor: "#221F3D",
+    borderWidth: 4,
+    borderColor: Colors.primary,
   },
   animeDetailView: {
     bottom: 15,
@@ -360,12 +362,12 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   heartIcon: {
-    fontSize: 34,
+    fontSize: 32,
     color: Colors.red,
     marginTop: 3,
   },
   greyHeartIcon: {
-    color: Colors.grey,
+    color: "#e8e8e8",
     position: "absolute",
   },
   animeCoverImage: {
