@@ -1,14 +1,16 @@
 import { infiniteQueryOptions } from "@tanstack/react-query";
 
-type GetSeasonNowParams = {
+type GetAnimeSearchParams = {
+  q: string;
   limit: number;
+  genres?: string;
 };
 
-export function getSeasonNowInfQuery(params: GetSeasonNowParams) {
+export function getAnimeSearchInfQuery(params: GetAnimeSearchParams) {
   return infiniteQueryOptions({
-    queryKey: ["getSeasonNow"],
+    queryKey: ["getAnimeSearch", params.q, params.genres],
     queryFn: async ({ pageParam }) => {
-      const url = new URL("https://api.jikan.moe/v4/seasons/now");
+      const url = new URL("https://api.jikan.moe/v4/anime");
       Object.entries({ ...params, page: pageParam }).forEach(([key, value]) =>
         url.searchParams.append(key, `${value}`)
       );
@@ -17,8 +19,9 @@ export function getSeasonNowInfQuery(params: GetSeasonNowParams) {
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
-      lastPage.pagination.has_next_page
-        ? lastPage.pagination.current_page + 1
+      lastPage?.pagination?.has_next_page
+        ? lastPage?.pagination?.current_page + 1
         : undefined,
+    staleTime: 0,
   });
 }

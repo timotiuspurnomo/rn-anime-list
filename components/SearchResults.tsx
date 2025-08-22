@@ -1,18 +1,33 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
   ActivityIndicator,
-  ScrollViewProps,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
+import { AnimeCard, AnimeGenreList } from "@/components";
+import { Fonts, Variables } from "@/constants";
+import { getAnimeSearchInfQuery } from "@/queries";
+import { useGenreStore } from "@/store";
+import { AnimeGenresType } from "@/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Fonts } from "@/constants";
-import { AnimeCard } from "@/components";
-import { getSeasonNowInfQuery } from "@/queries";
 
-export default function AnimeListThisSeason(props: ScrollViewProps) {
+type Props = {
+  keyword: string;
+  animeGenres: AnimeGenresType[];
+  isDelay: boolean;
+};
+
+export default function SearchResults({
+  keyword,
+  animeGenres,
+  isDelay: isDelayKeyword,
+}: Props) {
+  const [selectedGenres, setSelectedGenres] = useState("");
+  const [isDelayGenre, setIsDelayGenre] = useState(false);
+  const timeoutRef = useRef(0);
+  const { selectedGenresObj } = useGenreStore();
   const {
     data,
     hasNextPage,
@@ -21,8 +36,24 @@ export default function AnimeListThisSeason(props: ScrollViewProps) {
     fetchNextPage,
     isFetchNextPageError,
     isLoadingError,
-  } = useInfiniteQuery(getSeasonNowInfQuery({ limit: 10 }));
-  const getSeasonNowData = useMemo(
+  } = useInfiniteQuery(
+    getAnimeSearchInfQuery({ limit: 10, q: keyword, genres: selectedGenres })
+  );
+
+  useEffect(() => {
+    setIsDelayGenre(true);
+    timeoutRef.current && clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setSelectedGenres(
+        Object.entries(selectedGenresObj)
+          .map(([key]: [string, any]) => key)
+          .join(",")
+      );
+      setIsDelayGenre(false);
+    }, 1000);
+  }, [JSON.stringify(selectedGenresObj)]);
+
+  const getResultsData = useMemo(
     () => (data ? data.pages.flatMap((page) => page.data) : []),
     [data]
   );
@@ -41,7 +72,7 @@ export default function AnimeListThisSeason(props: ScrollViewProps) {
       !isLoadingError &&
       !isFetchNextPageError &&
       hasNextPage &&
-      getSeasonNowData.length > 0 && (
+      getResultsData.length > 0 && (
         <View style={styles.loadingMoreView}>
           <ActivityIndicator size={"large"} color={"#FFFFFF"} />
         </View>
@@ -53,7 +84,7 @@ export default function AnimeListThisSeason(props: ScrollViewProps) {
     return (
       !isLoading && (
         <View style={styles.emptyView}>
-          <Text style={styles.emptyText}>{"No Data"}</Text>
+          <Text style={styles.emptyText}>{"No Result"}</Text>
         </View>
       )
     );
@@ -61,13 +92,15 @@ export default function AnimeListThisSeason(props: ScrollViewProps) {
 
   return (
     <View style={styles.mainView}>
-      <Text style={styles.subTitle}>{"Animes this season"}</Text>
-      {isLoading ? (
+      <Text style={styles.subTitle}>{"Search results"}</Text>
+      {animeGenres.length > 0 && keyword.length > 0 && (
+        <AnimeGenreList data={animeGenres} />
+      )}
+      {isLoading || isDelayKeyword || isDelayGenre ? (
         renderLoading()
       ) : (
         <FlatList
-          {...props}
-          data={getSeasonNowData}
+          data={getResultsData}
           showsVerticalScrollIndicator={false}
           numColumns={3}
           columnWrapperStyle={styles.customColumnWrapper}
@@ -77,6 +110,7 @@ export default function AnimeListThisSeason(props: ScrollViewProps) {
           onEndReached={() => hasNextPage && !isFetching && fetchNextPage()}
           onEndReachedThreshold={0.1}
           contentContainerStyle={styles.customContentContainerStyle}
+          style={styles.customFlatList}
           ListEmptyComponent={renderEmptyList}
           ListFooterComponent={renderLoadingMore}
         />
@@ -102,8 +136,7 @@ const styles = StyleSheet.create({
     paddingBottom: 70,
   },
   emptyView: {
-    width: "100%",
-    height: 50,
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -122,6 +155,10 @@ const styles = StyleSheet.create({
     gap: "5%",
   },
   customContentContainerStyle: {
+    minHeight: Variables.screenHeight * 0.7,
     paddingBottom: 50,
+  },
+  customFlatList: {
+    marginTop: 20,
   },
 });
