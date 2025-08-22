@@ -2,30 +2,39 @@ import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { FasterImageView } from "@candlefinance/faster-image";
 import { Fonts, Variables, Icons, Colors } from "@/constants";
 
-type AnimeData = {
-  titles: { title: string }[];
-  images: { jpg: { image_url: string } };
-  score: number | null;
-  genres: { name: string }[];
-};
-export default function AnimeCard({ data }: { data: AnimeData }) {
-  const genres = data.genres
+type AnimeData =
+  | {
+      titles: { title: string }[];
+      images: { jpg: { image_url: string } };
+      score: number | null;
+      genres: { name: string }[];
+    }
+  | undefined;
+
+type Props = { data: AnimeData };
+
+export default function AnimeCard({ data }: Props) {
+  const genres = data?.genres
     .slice(0, 2)
     .map((genre) => genre.name)
     .join(" • ");
   return (
     <TouchableOpacity activeOpacity={0.8} style={styles.mainView}>
       <FasterImageView
-        source={{ url: data.images.jpg.image_url, borderRadius: 10 }}
+        source={{
+          url: data?.images.jpg.image_url || "",
+          showActivityIndicator: true,
+          borderRadius: 10,
+        }}
         style={styles.animeImage}
       />
       <Text style={styles.titleText} numberOfLines={1}>
-        {data.titles[data.titles.length - 1].title}
+        {data?.titles[data?.titles.length - 1].title}
       </Text>
       <View style={styles.scoreView}>
         <Image source={Icons.star} style={styles.starImage} />
         <Text style={styles.scoreText} numberOfLines={2}>
-          {data.score || "-"}
+          {data?.score || "-"}
         </Text>
       </View>
       <Text style={styles.genreText} numberOfLines={2}>

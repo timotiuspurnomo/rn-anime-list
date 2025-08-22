@@ -62,6 +62,16 @@ const Layout = () => {
         }}
       />
       <Tabs.Screen
+        name="Search"
+        options={{
+          title: "Search",
+          headerShown: false,
+          tabBarIcon: ({ focused }: { focused: boolean }) => (
+            <TabIcon focused={focused} title={"Search"} icon={Icons.search} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="Favorite"
         options={{
           title: "Favorite",
@@ -88,17 +98,17 @@ const styles = StyleSheet.create({
     top: 6,
   },
   focusedTabIconView: {
-    width: (Variables.screenWidth - 40 * 2) / 2,
+    width: (Variables.screenWidth - 25 * 2) * 0.35,
     flexDirection: "row",
     borderRadius: 999,
   },
   tabIconLabel: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: Fonts.medium,
   },
   tabIconIcon: {
-    width: 20,
-    height: 20,
+    width: 18,
+    height: 18,
     resizeMode: "contain",
   },
   focusedTabIconIcon: {
@@ -114,9 +124,9 @@ const styles = StyleSheet.create({
     height: 50,
   },
   customTabBar: {
-    backgroundColor: "#0F0D23",
+    backgroundColor: Colors.tertiary,
     height: 50,
-    marginHorizontal: 50,
+    marginHorizontal: 25,
     borderRadius: 999,
     position: "absolute",
     borderTopWidth: 0,

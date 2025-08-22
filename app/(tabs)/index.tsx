@@ -31,31 +31,34 @@ export default function Index() {
   return (
     <View style={styles.backgroundView}>
       <Background />
-      <SafeAreaView style={styles.mainView}>
-        <Animated.View
-          style={[styles.logoAppView, { height: welcomeHeaderHeight }]}
-        >
-          <Animated.Image
-            source={Images.gon}
-            style={[styles.logoAppImage, welcomeHeaderAnimatedStyle]}
+      <SafeAreaView style={styles.safeAreaView}>
+        <View style={styles.mainView}>
+          <Animated.View
+            style={[styles.logoAppView, { height: welcomeHeaderHeight }]}
+          >
+            <Animated.Image
+              source={Images.gon}
+              style={[styles.logoAppImage, welcomeHeaderAnimatedStyle]}
+            />
+            <Animated.Text
+              style={[styles.welcomeText, welcomeHeaderAnimatedStyle]}
+            >
+              {"Welcome, Gon!"}
+            </Animated.Text>
+            <Animated.Text
+              style={[styles.welcomeDescText, welcomeHeaderAnimatedStyle]}
+            >
+              {"What should we watch today?"}
+            </Animated.Text>
+          </Animated.View>
+          <AnimeListThisSeason
+            scrollEventThrottle={1}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: false }
+            )}
           />
-          <Animated.Text
-            style={[styles.welcomeText, welcomeHeaderAnimatedStyle]}
-          >
-            {"Welcome, Gon!"}
-          </Animated.Text>
-          <Animated.Text
-            style={[styles.welcomeDescText, welcomeHeaderAnimatedStyle]}
-          >
-            {"What should we watch today?"}
-          </Animated.Text>
-        </Animated.View>
-        <AnimeListThisSeason
-          scrollEventThrottle={1}
-          onScroll={Animated.event([
-            { nativeEvent: { contentOffset: { y: scrollY } } },
-          ])}
-        />
+        </View>
       </SafeAreaView>
     </View>
   );
@@ -66,8 +69,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.primary,
   },
+  safeAreaView: {
+    flex: 1,
+  },
   mainView: {
     flex: 1,
+    paddingHorizontal: 15,
   },
   logoAppView: {
     width: "100%",
