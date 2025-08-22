@@ -1,10 +1,20 @@
-import { infiniteQueryOptions } from "@tanstack/react-query";
+import { queryOptions, infiniteQueryOptions } from "@tanstack/react-query";
 
 type GetAnimeSearchParams = {
   q: string;
   limit: number;
   genres?: string;
 };
+
+export function getAnimeByIdQuery(id: number) {
+  return queryOptions({
+    queryKey: ["getAnimeByIdQuery", id],
+    queryFn: async () => {
+      const response = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
+      return (await response.json()).data;
+    },
+  });
+}
 
 export function getAnimeSearchInfQuery(params: GetAnimeSearchParams) {
   return infiniteQueryOptions({

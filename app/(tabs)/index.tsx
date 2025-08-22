@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   welcomeText: {
     fontFamily: Fonts.medium,
     fontSize: 20,
-    color: "#FFFFFF",
+    color: Colors.white,
   },
   welcomeDescText: {
     fontFamily: Fonts.regular,

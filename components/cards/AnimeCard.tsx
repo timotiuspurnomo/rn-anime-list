@@ -1,25 +1,27 @@
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { FasterImageView } from "@candlefinance/faster-image";
 import { Fonts, Variables, Icons, Colors } from "@/constants";
+import { useRouter } from "expo-router";
+import { AnimeDetailType } from "@/types";
+import { FontAwesome6 } from "@react-native-vector-icons/fontawesome6";
+import { useFavoriteStore } from "@/store";
 
-type AnimeData =
-  | {
-      titles: { title: string }[];
-      images: { jpg: { image_url: string } };
-      score: number | null;
-      genres: { name: string }[];
-    }
-  | undefined;
-
-type Props = { data: AnimeData };
+type Props = { data: AnimeDetailType | undefined };
 
 export default function AnimeCard({ data }: Props) {
+  const router = useRouter();
+  const { favouriteAnimeList } = useFavoriteStore();
   const genres = data?.genres
     .slice(0, 2)
     .map((genre) => genre.name)
     .join(" • ");
   return (
-    <TouchableOpacity activeOpacity={0.8} style={styles.mainView}>
+    <TouchableOpacity
+      activeOpacity={0.8}
+      disabled={!data?.mal_id}
+      onPress={() => router.navigate(`/anime/${data?.mal_id}`)}
+      style={styles.mainView}
+    >
       <FasterImageView
         source={{
           url: data?.images.jpg.image_url || "",
@@ -40,6 +42,9 @@ export default function AnimeCard({ data }: Props) {
       <Text style={styles.genreText} numberOfLines={2}>
         {genres}
       </Text>
+      {favouriteAnimeList[Number(data?.mal_id)] && (
+        <FontAwesome6 name="heart" iconStyle="solid" style={styles.heartIcon} />
+      )}
     </TouchableOpacity>
   );
 }
@@ -55,13 +60,13 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontFamily: Fonts.bold,
-    color: "#FFFFFF",
+    color: Colors.white,
     marginBottom: 6,
   },
   scoreText: {
     fontSize: 12,
     fontFamily: Fonts.bold,
-    color: "#FFFFFF",
+    color: Colors.white,
   },
   genreText: {
     fontSize: 12,
@@ -79,5 +84,13 @@ const styles = StyleSheet.create({
     height: 12,
     resizeMode: "contain",
     marginRight: 4,
+  },
+  heartIcon: {
+    top: 5,
+    right: 5,
+    alignSelf: "flex-end",
+    fontSize: 20,
+    color: Colors.red,
+    position: "absolute",
   },
 });

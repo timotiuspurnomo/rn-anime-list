@@ -7,25 +7,21 @@ import {
   View,
 } from "react-native";
 import { AnimeCard, AnimeGenreList } from "@/components";
-import { Fonts, Variables } from "@/constants";
+import { Colors, Fonts, Variables } from "@/constants";
 import { getAnimeSearchInfQuery } from "@/queries";
 import { useGenreStore } from "@/store";
-import { AnimeGenresType } from "@/types";
+import { AnimeGenreType } from "@/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 type Props = {
   keyword: string;
-  animeGenres: AnimeGenresType[];
-  isDelay: boolean;
+  animeGenres: AnimeGenreType[];
 };
 
-export default function SearchResults({
-  keyword,
-  animeGenres,
-  isDelay: isDelayKeyword,
-}: Props) {
+export default function SearchResults({ keyword, animeGenres }: Props) {
+  const [query, setQuery] = useState("");
   const [selectedGenres, setSelectedGenres] = useState("");
-  const [isDelayGenre, setIsDelayGenre] = useState(false);
+  const [isDelay, setIsDelay] = useState(false);
   const timeoutRef = useRef(0);
   const { selectedGenresObj } = useGenreStore();
   const {
@@ -37,21 +33,22 @@ export default function SearchResults({
     isFetchNextPageError,
     isLoadingError,
   } = useInfiniteQuery(
-    getAnimeSearchInfQuery({ limit: 10, q: keyword, genres: selectedGenres })
+    getAnimeSearchInfQuery({ limit: 10, q: query, genres: selectedGenres })
   );
 
   useEffect(() => {
-    setIsDelayGenre(true);
+    setIsDelay(true);
     timeoutRef.current && clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
+      setQuery(keyword);
       setSelectedGenres(
         Object.entries(selectedGenresObj)
           .map(([key]: [string, any]) => key)
           .join(",")
       );
-      setIsDelayGenre(false);
+      setIsDelay(false);
     }, 1000);
-  }, [JSON.stringify(selectedGenresObj)]);
+  }, [keyword, JSON.stringify(selectedGenresObj)]);
 
   const getResultsData = useMemo(
     () => (data ? data.pages.flatMap((page) => page.data) : []),
@@ -61,7 +58,7 @@ export default function SearchResults({
   function renderLoading() {
     return (
       <View style={styles.loadingView}>
-        <ActivityIndicator size={"large"} color={"#FFFFFF"} />
+        <ActivityIndicator size={"large"} color={Colors.white} />
       </View>
     );
   }
@@ -74,7 +71,7 @@ export default function SearchResults({
       hasNextPage &&
       getResultsData.length > 0 && (
         <View style={styles.loadingMoreView}>
-          <ActivityIndicator size={"large"} color={"#FFFFFF"} />
+          <ActivityIndicator size={"large"} color={Colors.white} />
         </View>
       )
     );
@@ -96,7 +93,7 @@ export default function SearchResults({
       {animeGenres.length > 0 && keyword.length > 0 && (
         <AnimeGenreList data={animeGenres} />
       )}
-      {isLoading || isDelayKeyword || isDelayGenre ? (
+      {isLoading || isDelay ? (
         renderLoading()
       ) : (
         <FlatList
@@ -143,12 +140,12 @@ const styles = StyleSheet.create({
   subTitle: {
     fontFamily: Fonts.bold,
     fontSize: 20,
-    color: "#FFFFFF",
+    color: Colors.white,
     marginBottom: 15,
   },
   emptyText: {
     fontFamily: Fonts.bold,
-    color: "#FFFFFF",
+    color: Colors.white,
   },
   customColumnWrapper: {
     marginBottom: 30,
