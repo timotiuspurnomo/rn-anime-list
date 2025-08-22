@@ -1,9 +1,12 @@
 import { useEffect } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { Fonts } from "@/constants";
 import "react-native-reanimated";
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -18,9 +21,11 @@ export default function RootLayout() {
   }, [loaded]);
 
   return loaded ? (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      {/* <Stack.Screen name="movies/[id]" options={{ headerShown: false }} /> */}
-    </Stack>
+    <QueryClientProvider client={queryClient}>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        {/* <Stack.Screen name="movies/[id]" options={{ headerShown: false }} /> */}
+      </Stack>
+    </QueryClientProvider>
   ) : null;
 }

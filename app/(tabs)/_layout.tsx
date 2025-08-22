@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { Tabs } from "expo-router";
 import { Colors, Images, Variables, Icons, Fonts } from "@/constants";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type TabIconProps = {
   focused: boolean;
@@ -38,12 +39,16 @@ const TabIcon = ({ focused, title, icon }: TabIconProps) => {
 };
 
 const Layout = () => {
+  const insets = useSafeAreaInsets();
   return (
     <Tabs
       screenOptions={{
         tabBarShowLabel: false,
         tabBarItemStyle: styles.customTabBarItem,
-        tabBarStyle: styles.customTabBar,
+        tabBarStyle: {
+          ...styles.customTabBar,
+          marginBottom: insets.bottom + 10,
+        },
       }}
     >
       <Tabs.Screen
@@ -51,7 +56,7 @@ const Layout = () => {
         options={{
           title: "Home",
           headerShown: false,
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused }: { focused: boolean }) => (
             <TabIcon focused={focused} title={"Home"} icon={Icons.home} />
           ),
         }}
@@ -61,7 +66,7 @@ const Layout = () => {
         options={{
           title: "Favorite",
           headerShown: false,
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({ focused }: { focused: boolean }) => (
             <TabIcon
               focused={focused}
               title={"Favorites"}
@@ -78,26 +83,26 @@ const styles = StyleSheet.create({
   tabIconView: {
     justifyContent: "center",
     alignItems: "center",
-    height: 60,
+    height: 50,
     width: Variables.screenWidth * 0.15,
-    top: 10.5,
+    top: 6,
   },
   focusedTabIconView: {
-    width: (Variables.screenWidth - 12 * 2) / 2,
+    width: (Variables.screenWidth - 40 * 2) / 2,
     flexDirection: "row",
-    borderRadius: 99,
+    borderRadius: 999,
   },
   tabIconLabel: {
     fontSize: 16,
     fontFamily: Fonts.medium,
   },
   tabIconIcon: {
-    width: 22,
-    height: 22,
+    width: 20,
+    height: 20,
     resizeMode: "contain",
   },
   focusedTabIconIcon: {
-    marginRight: 6,
+    marginRight: 10,
   },
   tabIconImage: {
     width: "100%",
@@ -106,15 +111,15 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   customTabBarItem: {
-    height: 60,
+    height: 50,
   },
   customTabBar: {
     backgroundColor: "#0F0D23",
-    height: 60,
-    marginHorizontal: 15,
-    marginBottom: 50,
-    borderRadius: 99,
+    height: 50,
+    marginHorizontal: 50,
+    borderRadius: 999,
     position: "absolute",
+    borderTopWidth: 0,
   },
 });
 
