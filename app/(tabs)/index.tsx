@@ -7,38 +7,39 @@ import {
   Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Extrapolation } from "react-native-reanimated";
 import { Background, AnimeListThisSeason } from "@/components";
 import { Colors, Fonts, Images, Variables } from "@/constants";
 
 export default function Index() {
   const insets = useSafeAreaInsets();
-  const [scrollY] = useState(new Animated.Value(0));
+  const [scrollAnimatedValue] = useState(new Animated.Value(0));
   const welcomeHeaderMaxHeight = Variables.screenWidth * 0.5;
   const welcomeHeaderMinHeight = Variables.screenWidth * 0.01;
   const scrollDistance = welcomeHeaderMaxHeight - welcomeHeaderMinHeight;
-  const welcomeHeaderHeight = scrollY.interpolate({
+  const welcomeHeaderHeight = scrollAnimatedValue.interpolate({
     inputRange: [
       0,
       Platform.OS === "android" ? scrollDistance * 2 : scrollDistance,
     ],
     outputRange: [welcomeHeaderMaxHeight, welcomeHeaderMinHeight],
-    extrapolate: "clamp",
+    extrapolate: Extrapolation.CLAMP,
   });
   const welcomeHeaderAnimatedStyle = {
-    opacity: scrollY.interpolate({
+    opacity: scrollAnimatedValue.interpolate({
       inputRange:
         Platform.OS === "android"
           ? [0, scrollDistance, scrollDistance * 2]
           : [0, scrollDistance / 2, scrollDistance],
       outputRange: [1, 0.5, 0],
-      extrapolate: "clamp",
+      extrapolate: Extrapolation.CLAMP,
     }),
     transform: [
       {
-        translateY: scrollY.interpolate({
+        translateY: scrollAnimatedValue.interpolate({
           inputRange: [0, scrollDistance],
           outputRange: [0, 0],
-          extrapolate: "clamp",
+          extrapolate: Extrapolation.CLAMP,
         }),
       },
     ],
@@ -69,7 +70,7 @@ export default function Index() {
           <AnimeListThisSeason
             scrollEventThrottle={1}
             onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              [{ nativeEvent: { contentOffset: { y: scrollAnimatedValue } } }],
               { useNativeDriver: false }
             )}
           />

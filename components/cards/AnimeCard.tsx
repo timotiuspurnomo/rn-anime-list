@@ -1,9 +1,10 @@
+import React from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { FasterImageView } from "@candlefinance/faster-image";
 import { Fonts, Variables, Icons, Colors } from "@/constants";
 import { useRouter } from "expo-router";
 import { AnimeDetailType } from "@/types";
-import { FontAwesome6 } from "@react-native-vector-icons/fontawesome6";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFavoriteStore } from "@/store";
 
 type Props = { data: AnimeDetailType | undefined };
@@ -43,7 +44,7 @@ export default function AnimeCard({ data }: Props) {
         {genres}
       </Text>
       {favouriteAnimeList[Number(data?.mal_id)] && (
-        <FontAwesome6 name="heart" iconStyle="solid" style={styles.heartIcon} />
+        <FontAwesome name="heart" style={styles.heartIcon} />
       )}
     </TouchableOpacity>
   );
