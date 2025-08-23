@@ -1,3 +1,4 @@
+import React, { useMemo } from "react";
 import {
   View,
   Text,
@@ -5,21 +6,30 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
-  ScrollView,
-  Animated,
   ActivityIndicator,
+  Platform,
 } from "react-native";
-import React, { useRef } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, {
+  Extrapolation,
+  interpolate,
+  interpolateColor,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withTiming,
+} from "react-native-reanimated";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import moment from "moment";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Colors, Fonts, Icons, Variables } from "@/constants";
 import { Background } from "@/components";
-import { FontAwesome6 } from "@react-native-vector-icons/fontawesome6";
 import { useQuery } from "@tanstack/react-query";
 import { getAnimeByIdQuery } from "@/queries";
 import { useFavoriteStore } from "@/store";
 import { AnimeDetailType, AnimeGenreType } from "@/types";
+const dayjs = require("dayjs");
 
 const AnimeDetail = () => {
   const router = useRouter();
@@ -27,9 +37,77 @@ const AnimeDetail = () => {
   const { id } = useLocalSearchParams();
   const { favouriteAnimeList, toogleFavorite } = useFavoriteStore();
   const { data, isLoading } = useQuery(getAnimeByIdQuery(Number(id)));
-  const redHeartAnimatedVal = useRef(
-    new Animated.Value(getIsFavorite() ? 1 : 0)
+
+  const heartAnimatedValue = useSharedValue(getIsFavorite() ? 1 : 0);
+  const heartAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: heartAnimatedValue.value }],
+  }));
+  const scrollAnimatedValue = useSharedValue(1);
+  const imageAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      scrollAnimatedValue.value,
+      [0, Variables.screenHeight * 0.6],
+      [1, 0],
+      Extrapolation.CLAMP
+    ),
+  }));
+
+  const headerAnimatedStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      scrollAnimatedValue.value,
+      [Variables.screenHeight * 0.55, Variables.screenHeight * 0.6],
+      [`${Colors.primary}00`, Colors.primary]
+    ),
+  }));
+
+  const headerTitleAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      scrollAnimatedValue.value,
+      [Variables.screenHeight * 0.55, Variables.screenHeight * 0.6],
+      [0, 1],
+      Extrapolation.CLAMP
+    ),
+  }));
+
+  const extraInfo = useMemo(
+    () =>
+      data
+        ? [
+            {
+              name: "Release Date",
+              values: dayjs(data.aired.from).format("D MMMM YYYY"),
+            },
+            { name: "Status", values: data.status },
+            {
+              name: "Licensors",
+              values: data.licensors.map(({ name }: { name: string }) => name),
+            },
+            {
+              name: "Studios",
+              values: data.studios.map(({ name }: { name: string }) => name),
+            },
+            { name: "Source", values: data.source },
+            { name: "Episodes", values: data.episodes },
+            {
+              name: "Themes",
+              values: data.themes.map(({ name }: { name: string }) => name),
+            },
+            {
+              name: "Demographic",
+              values: data.demographics.map(
+                ({ name }: { name: string }) => name
+              ),
+            },
+            { name: "Duration", values: data.duration },
+            { name: "Rating", values: data.rating },
+          ]
+        : [],
+    [data]
   );
+
+  const scrollHandler = useAnimatedScrollHandler((event) => {
+    scrollAnimatedValue.value = event.contentOffset.y;
+  });
 
   function capitalize(str: string) {
     return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
@@ -42,10 +120,6 @@ const AnimeDetail = () => {
     }).format(scoredBy);
   }
 
-  function getEpisodes(episodes: number | null) {
-    return episodes ? `${episodes} Episodes` : null;
-  }
-
   function getIsFavorite() {
     return !!favouriteAnimeList[Number(id)];
   }
@@ -56,18 +130,50 @@ const AnimeDetail = () => {
   }
 
   function startHeartAnimation(isFavorite: boolean) {
-    Animated.sequence([
-      Animated.timing(redHeartAnimatedVal.current, {
-        toValue: 1.5,
-        duration: 200,
-        useNativeDriver: false,
-      }),
-      Animated.timing(redHeartAnimatedVal.current, {
-        toValue: isFavorite ? 0 : 1,
-        duration: 200,
-        useNativeDriver: false,
-      }),
-    ]).start();
+    heartAnimatedValue.value = withSequence(
+      withTiming(1.5, { duration: 200 }),
+      withTiming(isFavorite ? 0 : 1, { duration: 200 })
+    );
+  }
+
+  function renderHeader() {
+    return (
+      <Animated.View
+        style={[
+          styles.headerView,
+          headerAnimatedStyle,
+          { paddingTop: Platform.select({ android: insets.top, ios: 0 }) },
+        ]}
+      >
+        <SafeAreaView>
+          <View style={styles.headerRowView}>
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={() => router.back()}
+              style={styles.backTouch}
+            >
+              <FontAwesome6
+                name="chevron-left"
+                style={styles.chevronLeftIcon}
+              />
+            </TouchableOpacity>
+            <Animated.View
+              style={[styles.headerTitleView, headerTitleAnimatedStyle]}
+            >
+              <Text
+                numberOfLines={1}
+                style={[styles.titleText, styles.smallerTitleText]}
+              >
+                {data.titles[data.titles.length - 1].title}
+              </Text>
+              <Text numberOfLines={1} style={styles.alternativeTitleText}>
+                {data.titles[0].title}
+              </Text>
+            </Animated.View>
+          </View>
+        </SafeAreaView>
+      </Animated.View>
+    );
   }
 
   function renderAnimeDetail(data: AnimeDetailType) {
@@ -116,33 +222,9 @@ const AnimeDetail = () => {
   }
 
   function renderExtraInfo() {
-    return [
-      {
-        name: "Release Date",
-        values: moment(data.aired.from).format("D MMMM YYYY"),
-      },
-      { name: "Status", values: data.status },
-      {
-        name: "Licensors",
-        values: data.licensors.map(({ name }: { name: string }) => name),
-      },
-      {
-        name: "Studios",
-        values: data.studios.map(({ name }: { name: string }) => name),
-      },
-      { name: "Source", values: data.source },
-      { name: "Episodes", values: data.episodes },
-      {
-        name: "Themes",
-        values: data.themes.map(({ name }: { name: string }) => name),
-      },
-      {
-        name: "Demographic",
-        values: data.demographics.map(({ name }: { name: string }) => name),
-      },
-      { name: "Duration", values: data.duration },
-      { name: "Rating", values: data.rating },
-    ].map((info, i) => renderSimpleInfo(i, info.name, info.values));
+    return extraInfo.map((info, i) =>
+      renderSimpleInfo(i, info.name, info.values)
+    );
   }
 
   function renderSimpleInfo(
@@ -183,55 +265,37 @@ const AnimeDetail = () => {
         {isLoading ? (
           renderLoading()
         ) : data ? (
-          <ScrollView
+          <Animated.ScrollView
+            onScroll={scrollHandler}
             contentContainerStyle={styles.customContentContainerStyle}
             style={styles.customScrollView}
           >
-            <Image
+            <Animated.Image
               source={{
                 uri: data?.images.jpg.large_image_url,
               }}
-              style={styles.animeCoverImage}
+              style={[styles.animeCoverImage, imageAnimatedStyle]}
             />
             <TouchableOpacity
               activeOpacity={1}
               onPress={() => onFavorite()}
               style={styles.favoriteView}
             >
-              <FontAwesome6
+              <FontAwesome
                 name="heart"
-                iconStyle="solid"
                 style={[styles.heartIcon, styles.greyHeartIcon]}
               />
-              <Animated.View
-                style={{ transform: [{ scale: redHeartAnimatedVal.current }] }}
-              >
-                <FontAwesome6
-                  name="heart"
-                  iconStyle="solid"
-                  style={styles.heartIcon}
-                />
+              <Animated.View style={heartAnimatedStyle}>
+                <FontAwesome name="heart" style={styles.heartIcon} />
               </Animated.View>
             </TouchableOpacity>
             {renderAnimeDetail(data)}
-          </ScrollView>
+          </Animated.ScrollView>
         ) : (
           renderError()
         )}
       </View>
-      <SafeAreaView>
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => router.back()}
-          style={[styles.backTouch, { top: 100 - insets.top * 1.5 }]}
-        >
-          <FontAwesome6
-            name="chevron-left"
-            iconStyle="solid"
-            style={styles.chevronLeftIcon}
-          />
-        </TouchableOpacity>
-      </SafeAreaView>
+      {!isLoading && renderHeader()}
     </View>
   );
 };
@@ -240,6 +304,21 @@ const styles = StyleSheet.create({
   backgroundView: {
     flex: 1,
     backgroundColor: Colors.primary,
+  },
+  headerView: {
+    width: "100%",
+    justifyContent: "center",
+    position: "absolute",
+    backgroundColor: Colors.primary,
+    paddingLeft: 15,
+  },
+  headerRowView: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 5,
+  },
+  headerTitleView: {
+    flexShrink: 1,
   },
   mainView: {
     width: "100%",
@@ -299,6 +378,9 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.bold,
     color: Colors.white,
   },
+  smallerTitleText: {
+    fontSize: 20,
+  },
   alternativeTitleText: {
     fontSize: 16,
     fontFamily: Fonts.medium,
@@ -354,8 +436,9 @@ const styles = StyleSheet.create({
     backgroundColor: `${Colors.grey}B3`,
     alignItems: "center",
     justifyContent: "center",
-    left: 15,
     borderRadius: 99,
+    marginRight: 15,
+    marginVertical: 10,
   },
   chevronLeftIcon: {
     fontSize: 22,
@@ -364,9 +447,10 @@ const styles = StyleSheet.create({
   heartIcon: {
     fontSize: 32,
     color: Colors.red,
-    marginTop: 3,
+    marginTop: 2,
   },
   greyHeartIcon: {
+    fontSize: 31,
     color: "#e8e8e8",
     position: "absolute",
   },
