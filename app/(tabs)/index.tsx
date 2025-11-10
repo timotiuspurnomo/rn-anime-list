@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Animated,
   View,
@@ -6,16 +6,16 @@ import {
   StyleSheet,
   Platform,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Extrapolation } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Background, AnimeListThisSeason } from "@/components";
 import { Colors, Fonts, Images, Variables } from "@/constants";
 
 export default function Index() {
   const insets = useSafeAreaInsets();
   const [scrollAnimatedValue] = useState(new Animated.Value(0));
-  const welcomeHeaderMaxHeight = Variables.screenWidth * 0.5;
   const welcomeHeaderMinHeight = Variables.screenWidth * 0.01;
+  const welcomeHeaderMaxHeight = Variables.screenWidth * 0.45;
   const scrollDistance = welcomeHeaderMaxHeight - welcomeHeaderMinHeight;
   const welcomeHeaderHeight = scrollAnimatedValue.interpolate({
     inputRange: [
@@ -34,15 +34,6 @@ export default function Index() {
       outputRange: [1, 0.5, 0],
       extrapolate: Extrapolation.CLAMP,
     }),
-    transform: [
-      {
-        translateY: scrollAnimatedValue.interpolate({
-          inputRange: [0, scrollDistance],
-          outputRange: [0, 0],
-          extrapolate: Extrapolation.CLAMP,
-        }),
-      },
-    ],
   };
   return (
     <View style={styles.backgroundView}>
@@ -108,8 +99,8 @@ const styles = StyleSheet.create({
     color: Colors.grey,
   },
   logoAppImage: {
-    width: 80,
-    height: 80,
+    width: Variables.screenWidth * 0.2,
+    height: Variables.screenWidth * 0.2,
     borderRadius: 99,
     resizeMode: "cover",
     marginBottom: 10,

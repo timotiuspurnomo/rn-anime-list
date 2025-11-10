@@ -1,3 +1,4 @@
+import React from "react";
 import { Colors, Fonts } from "@/constants";
 import { useGenreStore } from "@/store";
 import { AnimeGenreType } from "@/types";

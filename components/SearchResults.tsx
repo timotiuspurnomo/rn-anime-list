@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { AnimeGenreList, AnimeList } from "@/components";
 import { Colors, Fonts, Variables } from "@/constants";
@@ -16,7 +16,7 @@ export default function SearchResults({ keyword, animeGenres }: Props) {
   const [query, setQuery] = useState("");
   const [selectedGenres, setSelectedGenres] = useState("");
   const [isDelay, setIsDelay] = useState(false);
-  const timeoutRef = useRef(0);
+  const timeoutRef = useRef(setTimeout(() => {}));
   const { selectedGenresObj } = useGenreStore();
   const {
     data,
