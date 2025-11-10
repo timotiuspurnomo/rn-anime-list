@@ -1,50 +1,48 @@
-# Welcome to your Expo app 👋
+# Welcome to AnimeList
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Get started
+## Try the app
 
 1. Install dependencies
 
    ```bash
-   npm install
+   npm run reset-ios
+   # or
+   npm run reset-android
    ```
 
 2. Start the app
 
    ```bash
-   npx expo start
+   npm run ios
+   # or
+   npm run android
    ```
 
-In the output, you'll find options to open the app in a
+## Tools / Libraries Used
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+1. Expo with Typescript\
+   Production-grade framework for React Native.\
+   I always recommend Expo instead of CLI because it simplifies developing and building the app.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+2. Jikan API\
+   Jikan is an unofficial & open-source API for MyAnimeList.
 
-## Get a fresh project
+3. Zustand\
+   Small and fast state management library.\
+   In my opinion, Zustand is simpler, easier, and more straightforward than RTK.
 
-When you're ready, run:
+4. MMKV\
+   An efficient, small mobile key-value storage framework developed by WeChat. \
+   Faster than AsyncStorage in both read and write operations.
 
-```bash
-npm run reset-project
-```
+5. Tanstack Query\
+   Powerful asynchronous state management, server-state utilities and data fetching.\
+   A perfect combo with Zustand as a client-state and server-state management.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+6. Day.js\
+   Small-sized alternative to Moment.js with the same modern API.
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+7. React Native Reanimated\
+   For smooth animations with an excellent developer experience.

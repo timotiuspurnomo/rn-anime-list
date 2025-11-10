@@ -1,75 +1,108 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from "react";
+import {
+  Animated,
+  View,
+  SafeAreaView,
+  StyleSheet,
+  Platform,
+} from "react-native";
+import { Extrapolation } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Background, AnimeListThisSeason } from "@/components";
+import { Colors, Fonts, Images, Variables } from "@/constants";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-
-export default function HomeScreen() {
+export default function Index() {
+  const insets = useSafeAreaInsets();
+  const [scrollAnimatedValue] = useState(new Animated.Value(0));
+  const welcomeHeaderMinHeight = Variables.screenWidth * 0.01;
+  const welcomeHeaderMaxHeight = Variables.screenWidth * 0.45;
+  const scrollDistance = welcomeHeaderMaxHeight - welcomeHeaderMinHeight;
+  const welcomeHeaderHeight = scrollAnimatedValue.interpolate({
+    inputRange: [
+      0,
+      Platform.OS === "android" ? scrollDistance * 2 : scrollDistance,
+    ],
+    outputRange: [welcomeHeaderMaxHeight, welcomeHeaderMinHeight],
+    extrapolate: Extrapolation.CLAMP,
+  });
+  const welcomeHeaderAnimatedStyle = {
+    opacity: scrollAnimatedValue.interpolate({
+      inputRange:
+        Platform.OS === "android"
+          ? [0, scrollDistance, scrollDistance * 2]
+          : [0, scrollDistance / 2, scrollDistance],
+      outputRange: [1, 0.5, 0],
+      extrapolate: Extrapolation.CLAMP,
+    }),
+  };
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.backgroundView}>
+      <Background />
+      <SafeAreaView style={styles.safeAreaView}>
+        <View style={[styles.mainView, { paddingTop: 80 - insets.top }]}>
+          <Animated.View
+            style={[styles.logoAppView, { height: welcomeHeaderHeight }]}
+          >
+            <Animated.Image
+              source={Images.gon}
+              style={[styles.logoAppImage, welcomeHeaderAnimatedStyle]}
+            />
+            <Animated.Text
+              style={[styles.welcomeText, welcomeHeaderAnimatedStyle]}
+            >
+              {"Welcome, Gon!"}
+            </Animated.Text>
+            <Animated.Text
+              style={[styles.welcomeDescText, welcomeHeaderAnimatedStyle]}
+            >
+              {"What should we watch today?"}
+            </Animated.Text>
+          </Animated.View>
+          <AnimeListThisSeason
+            scrollEventThrottle={1}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollAnimatedValue } } }],
+              { useNativeDriver: false }
+            )}
+          />
+        </View>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  backgroundView: {
+    flex: 1,
+    backgroundColor: Colors.primary,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  safeAreaView: {
+    flex: 1,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  mainView: {
+    flex: 1,
+    paddingHorizontal: 15,
+  },
+  logoAppView: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  welcomeText: {
+    fontFamily: Fonts.medium,
+    fontSize: 20,
+    color: Colors.white,
+  },
+  welcomeDescText: {
+    fontFamily: Fonts.regular,
+    fontSize: 12,
+    color: Colors.grey,
+  },
+  logoAppImage: {
+    width: Variables.screenWidth * 0.2,
+    height: Variables.screenWidth * 0.2,
+    borderRadius: 99,
+    resizeMode: "cover",
+    marginBottom: 10,
   },
 });

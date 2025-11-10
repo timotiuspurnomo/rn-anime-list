@@ -1,29 +1,32 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import React, { useEffect } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Stack } from "expo-router";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { Fonts } from "@/constants";
+import "react-native-reanimated";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    [Fonts.bold]: require("../assets/fonts/Figtree-Bold.ttf"),
+    [Fonts.medium]: require("../assets/fonts/Figtree-Medium.ttf"),
+    [Fonts.regular]: require("../assets/fonts/Figtree-Regular.ttf"),
+    [Fonts.semiBold]: require("../assets/fonts/Figtree-SemiBold.ttf"),
   });
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
+  useEffect(() => {
+    loaded && SplashScreen.hideAsync();
+  }, [loaded]);
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+  return loaded ? (
+    <QueryClientProvider client={queryClient}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+        <Stack.Screen name="anime/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="WebView" options={{ headerBackTitle: "Back" }} />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+    </QueryClientProvider>
+  ) : null;
 }

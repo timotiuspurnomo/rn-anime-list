@@ -1,45 +1,136 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import React from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  ImageSourcePropType,
+} from "react-native";
+import { Tabs } from "expo-router";
+import { Colors, Images, Variables, Icons, Fonts } from "@/constants";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+type TabIconProps = {
+  focused: boolean;
+  title: string;
+  icon: ImageSourcePropType;
+};
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+const TabIcon = ({ focused, title, icon }: TabIconProps) => {
+  return focused ? (
+    <View style={[styles.tabIconView, styles.focusedTabIconView]}>
+      <Image source={Images.tabHighlight} style={styles.tabIconImage} />
+      <Image
+        tintColor={Colors.secondary}
+        style={[styles.tabIconIcon, styles.focusedTabIconIcon]}
+        source={icon}
+      />
+      <Text style={styles.tabIconLabel}>{title}</Text>
+    </View>
+  ) : (
+    <View style={styles.tabIconView}>
+      <Image
+        source={icon}
+        tintColor={Colors.blueLight}
+        style={styles.tabIconIcon}
+      />
+    </View>
+  );
+};
 
+const Layout = () => {
+  const insets = useSafeAreaInsets();
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
+        tabBarShowLabel: false,
+        tabBarItemStyle: styles.customTabBarItem,
+        tabBarStyle: {
+          ...styles.customTabBar,
+          marginBottom: insets.bottom + 10,
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: "Home",
+          headerShown: false,
+          tabBarIcon: ({ focused }: { focused: boolean }) => (
+            <TabIcon focused={focused} title={"Home"} icon={Icons.home} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="Search"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: "Search",
+          headerShown: false,
+          tabBarIcon: ({ focused }: { focused: boolean }) => (
+            <TabIcon focused={focused} title={"Search"} icon={Icons.search} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Favorite"
+        options={{
+          title: "Favorite",
+          headerShown: false,
+          tabBarIcon: ({ focused }: { focused: boolean }) => (
+            <TabIcon
+              focused={focused}
+              title={"Favorites"}
+              icon={Icons.favorite}
+            />
+          ),
         }}
       />
     </Tabs>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  tabIconView: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+    width: Variables.screenWidth * 0.15,
+    top: 6,
+  },
+  focusedTabIconView: {
+    width: (Variables.screenWidth - 25 * 2) * 0.35,
+    flexDirection: "row",
+    borderRadius: 999,
+  },
+  tabIconLabel: {
+    fontSize: 14,
+    fontFamily: Fonts.medium,
+  },
+  tabIconIcon: {
+    width: 18,
+    height: 18,
+    resizeMode: "contain",
+  },
+  focusedTabIconIcon: {
+    marginRight: 10,
+  },
+  tabIconImage: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    borderRadius: 999,
+  },
+  customTabBarItem: {
+    height: 50,
+  },
+  customTabBar: {
+    backgroundColor: Colors.tertiary,
+    height: 50,
+    marginHorizontal: 25,
+    borderRadius: 999,
+    position: "absolute",
+    borderTopWidth: 0,
+  },
+});
+
+export default Layout;
