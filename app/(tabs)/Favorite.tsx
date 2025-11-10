@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { Text, View, StyleSheet, SafeAreaView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AnimeList, Background } from "@/components";

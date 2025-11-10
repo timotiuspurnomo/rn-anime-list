@@ -1,4 +1,5 @@
 export type AnimeDetailType = {
+  url: string;
   mal_id: number;
   titles: { title: string }[];
   images: { jpg: { image_url: string } };

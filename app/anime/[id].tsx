@@ -23,6 +23,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Octicons from "@expo/vector-icons/Octicons";
 import { Colors, Fonts, Icons, Variables } from "@/constants";
 import { Background } from "@/components";
 import { useQuery } from "@tanstack/react-query";
@@ -157,19 +158,21 @@ const AnimeDetail = () => {
                 style={styles.chevronLeftIcon}
               />
             </TouchableOpacity>
-            <Animated.View
-              style={[styles.headerTitleView, headerTitleAnimatedStyle]}
-            >
-              <Text
-                numberOfLines={1}
-                style={[styles.titleText, styles.smallerTitleText]}
+            {data && (
+              <Animated.View
+                style={[styles.headerTitleView, headerTitleAnimatedStyle]}
               >
-                {data.titles[data.titles.length - 1].title}
-              </Text>
-              <Text numberOfLines={1} style={styles.alternativeTitleText}>
-                {data.titles[0].title}
-              </Text>
-            </Animated.View>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.titleText, styles.smallerTitleText]}
+                >
+                  {data.titles[data.titles.length - 1].title}
+                </Text>
+                <Text numberOfLines={1} style={styles.alternativeTitleText}>
+                  {data.titles[0].title}
+                </Text>
+              </Animated.View>
+            )}
           </View>
         </SafeAreaView>
       </Animated.View>
@@ -205,6 +208,23 @@ const AnimeDetail = () => {
         <Text style={styles.infoText}>{"Genres"}</Text>
         {renderGenres()}
         {renderExtraInfo()}
+        {data.url && (
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() =>
+              router.navigate({
+                pathname: "/WebView",
+                params: { url: data.url, title: "MyAnimeList.net" },
+              })
+            }
+            style={styles.openMalButton}
+          >
+            <Text style={styles.openMalButtonLabel}>
+              {"Open this page in MAL site"}
+            </Text>
+            <Octicons name="link-external" style={styles.linkExternalIcon} />
+          </TouchableOpacity>
+        )}
       </View>
     );
   }
@@ -430,6 +450,11 @@ const styles = StyleSheet.create({
     color: Colors.white,
     textAlign: "center",
   },
+  openMalButtonLabel: {
+    fontSize: 16,
+    fontFamily: Fonts.medium,
+    color: Colors.primary,
+  },
   backTouch: {
     width: 50,
     height: 50,
@@ -439,6 +464,15 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     marginRight: 15,
     marginVertical: 10,
+  },
+  openMalButton: {
+    paddingVertical: 11,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 5,
+    backgroundColor: Colors.purple,
+    marginTop: 30,
   },
   chevronLeftIcon: {
     fontSize: 22,
@@ -454,6 +488,11 @@ const styles = StyleSheet.create({
     color: "#e8e8e8",
     position: "absolute",
   },
+  linkExternalIcon: {
+    fontSize: 20,
+    color: Colors.primary,
+    marginLeft: 10,
+  },
   animeCoverImage: {
     width: "100%",
     height: Variables.screenHeight * 0.6,
@@ -466,7 +505,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   customContentContainerStyle: {
-    paddingBottom: 50,
+    paddingBottom: 80,
   },
   customScrollView: {
     flex: 1,

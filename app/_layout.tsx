@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
@@ -25,6 +25,7 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="anime/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="WebView" options={{ headerBackTitle: "Back" }} />
       </Stack>
     </QueryClientProvider>
   ) : null;

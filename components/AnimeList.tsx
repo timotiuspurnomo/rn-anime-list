@@ -1,3 +1,4 @@
+import React from "react";
 import { FlatList, FlatListProps, StyleSheet } from "react-native";
 import { AnimeCard } from "@/components";
 import { AnimeDetailType } from "@/types";
