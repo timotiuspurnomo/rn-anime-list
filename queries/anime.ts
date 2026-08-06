@@ -10,7 +10,7 @@ export function getAnimeByIdQuery(id: number) {
   return queryOptions({
     queryKey: ["getAnimeByIdQuery", id],
     queryFn: async () => {
-      const response = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
+      const response = await fetch(`https://api.tenrai.org/v1/anime/${id}`);
       return (await response.json()).data;
     },
   });
@@ -20,9 +20,9 @@ export function getAnimeSearchInfQuery(params: GetAnimeSearchParams) {
   return infiniteQueryOptions({
     queryKey: ["getAnimeSearch", params.q, params.genres],
     queryFn: async ({ pageParam }) => {
-      const url = new URL("https://api.jikan.moe/v4/anime");
+      const url = new URL("https://api.tenrai.org/v1/anime");
       Object.entries({ ...params, page: pageParam }).forEach(([key, value]) =>
-        url.searchParams.append(key, `${value}`)
+        url.searchParams.append(key, `${value}`),
       );
       const response = await fetch(url);
       return await response.json();

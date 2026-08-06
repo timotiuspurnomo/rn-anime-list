@@ -36,6 +36,6 @@ export const useFavoriteStore = create<FavoriteState>()(
     {
       name: "favorite-storage",
       storage: createJSONStorage(() => createStorage("favorite-storage")),
-    }
-  )
+    },
+  ),
 );
