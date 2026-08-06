@@ -8,9 +8,9 @@ export function getSeasonNowInfQuery(params: GetSeasonNowParams) {
   return infiniteQueryOptions({
     queryKey: ["getSeasonNow"],
     queryFn: async ({ pageParam }) => {
-      const url = new URL("https://api.jikan.moe/v4/seasons/now");
+      const url = new URL("https://api.tenrai.org/v1/seasons/now");
       Object.entries({ ...params, page: pageParam }).forEach(([key, value]) =>
-        url.searchParams.append(key, `${value}`)
+        url.searchParams.append(key, `${value}`),
       );
       const response = await fetch(url);
       return await response.json();

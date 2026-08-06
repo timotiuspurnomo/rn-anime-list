@@ -26,8 +26,8 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    Production-grade framework for React Native.\
    I always recommend Expo instead of CLI because it simplifies developing and building the app.
 
-2. Jikan API\
-   Jikan is an unofficial & open-source API for MyAnimeList.
+2. Tenrai API\
+   Tenrai is an unofficial & open-source API for MyAnimeList.
 
 3. Zustand\
    Small and fast state management library.\
